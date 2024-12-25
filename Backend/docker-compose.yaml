@@ -1,0 +1,21 @@
+version: "3.9"  # Specifies the Compose file format version
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: shanan
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: mohammed
+      MYSQL_PASSWORD: shanan
+    ports:
+      - "3306:3306"  # Map port 3306 to the host
+    volumes:
+      - mcq-data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  mcq-data:  # Persistent storage for MySQL
+
+networks:
+  app-network:  # Shared network for communication between services
