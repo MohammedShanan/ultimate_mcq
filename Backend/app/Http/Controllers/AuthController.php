@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -15,16 +16,26 @@ class AuthController extends Controller
         ]);
         $user = User::create($felids);
         $token = $user->createToken($request->name);
-        return ['token' => $token, 'user' => $user];
+        return ['token' => $token->plainTextToken, 'user' => $user];
     }
 
     public function login(Request $request)
     {
-        return 'login';
+        $request->validate([
+            "name" => ['required'],
+            "password" => ['required'],
+        ]);
+        $user = User::where('name', $request->name)->first();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return ['message' => 'Wrong user name or password'];
+        }
+        $token = $user->createToken($user->name);
+        return ['token' => $token->plainTextToken, 'user' => $user];
     }
 
     public function logout(Request $request)
     {
-        return 'logout';
+        $request->user()->tokens()->delete();
+        return ['message' => 'you have been logged out'];
     }
 }
