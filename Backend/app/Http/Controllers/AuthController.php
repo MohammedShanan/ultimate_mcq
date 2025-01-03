@@ -27,7 +27,7 @@ class AuthController extends Controller
         ]);
         $user = User::where('name', $request->name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return ['message' => 'Wrong user name or password'];
+            return ['errors' => ['name' => ['Wrong user name or password']]];
         }
         $token = $user->createToken($user->name);
         return ['token' => $token->plainTextToken, 'user' => $user];
