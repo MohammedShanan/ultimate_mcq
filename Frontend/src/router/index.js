@@ -4,6 +4,8 @@ import RegisterView from "@/views/Auth/RegisterView.vue";
 import LoginView from "@/views/Auth/LoginView.vue";
 import { useAuthStore } from "@/stores/auth";
 import CreateView from "@/views/Quiz/CreateView.vue";
+import ShowView from "@/views/Quiz/ShowView.vue";
+import EditView from "@/views/Quiz/EditView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +31,17 @@ const router = createRouter({
       path: "/create",
       name: "create",
       component: CreateView,
+      meta: { auth: true },
+    },
+    {
+      path: "/quizzes/:id",
+      name: "show",
+      component: ShowView,
+    },
+    {
+      path: "/edit/quiz/:id",
+      name: "edit",
+      component: EditView,
       meta: { auth: true },
     },
   ],

@@ -1,10 +1,12 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useCreateStore } from "@/stores/Quiz/create";
-
-const { addQuestion, removeQuestion, addAnswer, removeAnswer, submitQuiz } =
+import { useShowStore } from "@/stores/Quiz/show";
+import { useRoute } from "vue-router";
+const { addQuestion, removeQuestion, addAnswer, removeAnswer, UpdateQuiz } =
   useCreateStore();
-
+const { getQuiz } = useShowStore();
+const route = useRoute();
 // Reactive state for the quiz
 const quiz = reactive({
   title: "",
@@ -21,14 +23,18 @@ const quiz = reactive({
     },
   ],
 });
+onMounted(async () => {
+  const fetchedQuiz = await getQuiz(route.params.id);
+  Object.assign(quiz, fetchedQuiz);
+});
 </script>
 
 <template>
   <main>
     <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h1 class="text-2xl font-semibold text-gray-700 mb-4">Create New Quiz</h1>
+      <h1 class="text-2xl font-semibold text-gray-700 mb-6">Edit Quiz</h1>
 
-      <form @submit.prevent="submitQuiz(quiz)">
+      <form @submit.prevent="UpdateQuiz(route.params.id, quiz)">
         <!-- Quiz Title -->
         <div class="mb-6">
           <label
@@ -85,13 +91,14 @@ const quiz = reactive({
                 :name="'correct_answer_' + questionIndex"
                 v-model="question.correctAnswer"
                 :value="answerIndex"
+                :checked="answer.is_correct"
                 class="form-radio h-4 w-4 text-blue-500 focus:ring-blue-500" />
               <span class="ml-2 text-sm text-gray-600">Correct</span>
             </label>
             <button
               type="button"
               @click="removeAnswer(quiz, questionIndex, answerIndex)"
-              class="ml-4 text-red-500 hover:text-red-700 text-sm">
+              class="text-red-500 hover:text-red-700 text-sm ml-2">
               Remove
             </button>
           </div>
@@ -117,7 +124,7 @@ const quiz = reactive({
         <button
           type="submit"
           class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:ring-4 focus:ring-blue-300">
-          Create Quiz
+          Update Quiz
         </button>
       </form>
     </div>
