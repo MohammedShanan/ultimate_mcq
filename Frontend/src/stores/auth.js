@@ -1,4 +1,3 @@
-import { data } from "autoprefixer";
 import { defineStore } from "pinia";
 
 export const useAuthStore = defineStore("authStore", {
@@ -8,15 +7,19 @@ export const useAuthStore = defineStore("authStore", {
   actions: {
     // get user
     async getUser() {
-      if (localStorage.getItem("token")) {
-        const res = await fetch("api/user", {
-          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        const data = await res.json();
-        if (res.ok) {
-          this.user = data;
+      try {
+        if (localStorage.getItem("token")) {
+          const res = await fetch("api/user", {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+          const data = await res.json();
+          if (res.ok) {
+            this.user = data;
+          }
         }
-      }
+      } catch {}
     },
     // login and register
     async authenticate(apiRoute, formData) {

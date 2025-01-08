@@ -50,6 +50,8 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   const authstore = useAuthStore();
   await authstore.getUser();
+  try {
+  } catch {}
   if (authstore.user && to.meta.guest) {
     return { name: "home" };
   }
@@ -57,4 +59,5 @@ router.beforeEach(async (to, from) => {
     return { name: "login" };
   }
 });
+
 export default router;

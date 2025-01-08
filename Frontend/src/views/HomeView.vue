@@ -1,14 +1,41 @@
 <script setup>
-import { useIndexStore } from "@/stores/Quiz/index";
-import { onMounted, ref } from "vue";
-import { RouterLink, RouterView } from "vue-router";
+import { useIndexStore } from "@/stores/Quiz/quiz";
+import { onMounted, ref, watch } from "vue";
 import { useAuthStore } from "../stores/auth";
-import { storeToRefs } from "pinia";
-const { getQuizzes, deleteQuiz } = useIndexStore();
+import { useRoute } from "vue-router";
+
+// Store imports
+const { getQuizzes, deleteQuiz, goToRoute } = useIndexStore();
 const { user } = useAuthStore();
 const currentUserName = user ? user.name : ""; // Current logged-in user
+
+// Reactive data
 const quizzes = ref([]);
-onMounted(async () => (quizzes.value = await getQuizzes()));
+const route = useRoute();
+
+// Function to fetch quizzes with try/catch
+const loadQuizzes = async () => {
+  try {
+    quizzes.value = await getQuizzes(); // Fetch quizzes
+  } catch (error) {
+    console.error("Failed to load quizzes:", error);
+    alert("There was an error fetching the quizzes. Please try again.");
+  }
+};
+
+// Load quizzes on component mount
+onMounted(() => {
+  loadQuizzes(); // Trigger fetching of quizzes when mounted
+});
+
+// Watch for route changes to reload quizzes
+watch(
+  () => route.fullPath,
+  () => {
+    loadQuizzes(); // Reload quizzes when the route changes
+  },
+  { immediate: true } // Trigger immediately on mount
+);
 </script>
 
 <template>
@@ -43,16 +70,16 @@ onMounted(async () => (quizzes.value = await getQuizzes()));
             class="mt-4 flex justify-between items-center">
             <RouterLink
               :to="{ name: 'edit', params: { id: quiz.id } }"
-              class="bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-center">
+              class="bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-center cursor-pointer">
               Edit
             </RouterLink>
             <RouterLink
               :to="{ name: 'show', params: { id: quiz.id } }"
-              class="bg-green-500 text-white py-1 px-3 rounded-md hover:bg-green-600 text-center">
+              class="bg-green-500 text-white py-1 px-3 rounded-md hover:bg-green-600 text-center cursor-pointer">
               Take Quiz
             </RouterLink>
             <button
-              @click="deleteQuiz(quiz.id)"
+              @click="deleteQuiz(quizzes, quiz.id)"
               class="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600">
               Delete
             </button>
@@ -62,7 +89,7 @@ onMounted(async () => (quizzes.value = await getQuizzes()));
           <div v-else class="mt-4 text-center">
             <RouterLink
               :to="{ name: 'show', params: { id: quiz.id } }"
-              class="bg-green-500 text-white py-1 px-3 rounded-md hover:bg-green-600 text-center">
+              class="bg-green-500 text-white py-1 px-3 rounded-md hover:bg-green-600 text-center cursor-pointer">
               Take Quiz
             </RouterLink>
           </div>

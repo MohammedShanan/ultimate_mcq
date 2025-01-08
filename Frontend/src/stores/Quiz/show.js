@@ -13,11 +13,10 @@ export const useShowStore = defineStore("showStore", {
     // Submit Quiz Logic
     submitQuiz(quiz, userAnswers) {
       // Simulate processing answers (API call will replace this)
-      console.log(userAnswers);
       let answer = "";
       quiz.questions.forEach((question, index) => {
         answer = question.answers[userAnswers[index]];
-        if (answer.is_correct) {
+        if (answer && answer.is_correct) {
           this.score += 1;
         }
       });

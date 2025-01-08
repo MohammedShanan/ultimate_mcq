@@ -3,6 +3,7 @@ import { useShowStore } from "@/stores/Quiz/show";
 import { storeToRefs } from "pinia";
 import { onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+
 const { result, score } = storeToRefs(useShowStore());
 const { getQuiz, submitQuiz } = useShowStore();
 // Mock quiz data
@@ -10,12 +11,28 @@ const quiz = ref({});
 const route = useRoute();
 let userAnswers = reactive([]);
 
-onMounted(async () => {
+// Load quiz data
+const loadQuizData = async () => {
   quiz.value = await getQuiz(route.params.id);
   userAnswers = Array(quiz.value.questions.length).fill(null);
-});
-</script>
+  result.value = false;
+  score.value = 0;
+};
 
+// Initial load
+onMounted(loadQuizData);
+
+// Watch for route parameter changes
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      loadQuizData(); // Reload quiz data only if the ID changes
+    }
+  },
+  { immediate: true } // Ensure it's called on mount as well
+);
+</script>
 <template>
   <main>
     <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
@@ -47,11 +64,11 @@ onMounted(async () => {
             :key="answerIndex"
             class="mb-3"
             :class="{
-              'bg-green-200': result && answer.is_correct === 1,
-              'bg-red-200':
+              'bg-green-300': result && answer.is_correct,
+              'bg-red-300':
                 result &&
                 userAnswers[questionIndex] === answerIndex &&
-                answer.is_correct === 0,
+                !answer.is_correct,
               'bg-transparent': !result,
             }">
             <label class="flex items-center cursor-pointer">
@@ -65,11 +82,12 @@ onMounted(async () => {
             </label>
           </div>
         </div>
+
         <!-- Submit Button -->
         <button
           v-if="!result"
           type="submit"
-          class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:ring-4 focus:ring-blue-300">
+          class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
           Submit Quiz
         </button>
       </form>

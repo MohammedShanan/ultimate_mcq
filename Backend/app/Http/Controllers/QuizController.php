@@ -19,7 +19,7 @@ class QuizController extends Controller implements HasMiddleware
     // List all quizzes
     public function index()
     {
-        $quizzes = Quiz::all();
+        $quizzes = Quiz::with('user')->get();
         return response()->json($quizzes);
     }
 
