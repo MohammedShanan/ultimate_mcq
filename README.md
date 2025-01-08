@@ -91,12 +91,7 @@ Ensure the following software is installed on your system:
    php artisan migrate
    ```
 
-8. **Build Front-End Assets**:
-   ```bash
-   npm run dev
-   ```
-
-9. **Serve the Application**:
+8. **Serve the Application**:
     ```bash
     php artisan serve
     ```
