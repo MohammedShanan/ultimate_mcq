@@ -48,6 +48,7 @@ export const useAuthStore = defineStore("authStore", {
         this.errors = {};
         localStorage.removeItem("token");
         this.router.push({ name: "home" });
+        window.location.reload();
       }
     },
   },

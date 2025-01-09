@@ -20,8 +20,6 @@ export const useShowStore = defineStore("showStore", {
           this.score += 1;
         }
       });
-      console.log(this.score);
-      alert("Quiz submitted! Check the console for details.");
       this.result = true;
     },
   },
